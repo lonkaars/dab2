@@ -48,17 +48,17 @@ create table if not exists `formula1`.`endposition` (
   `ID` int not null auto_increment,
   `memberID` int null default null,
   `position` int null default null,
-  `specialPoistionID` int null default null,
+  `specialPositionID` int null default null,
   primary key (`ID`),
   unique index `ID_UNIQUE` (`ID` asc) visible,
   index `memberIDEndPosition_idx` (`memberID` asc) visible,
-  index `specialPositionID_idx` (`specialPoistionID` asc) visible,
+  index `specialPositionID_idx` (`specialPositionID` asc) visible,
   constraint `memberIDEndPosition`
     foreign key (`memberID`)
     references `formula1`.`member` (`ID`)
     on update cascade,
   constraint `specialPositionID`
-    foreign key (`specialPoistionID`)
+    foreign key (`specialPositionID`)
     references `formula1`.`specialposition` (`ID`)
     on update cascade);
 
