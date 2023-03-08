@@ -30,11 +30,11 @@ insert into `formula1`.`specialposition` (`type`) values
 	("Disqualified"),
 	("Did not finish");
 
-insert into `formula1`.`member` (`firstName`, `middleName`, `lastName`, `functionID`, `membercol`) values
-	("Mario", "", "Mario", 1, "TODO"),
-	("Luigi", "", "Mario", 1, "TODO"),
-	("Peach", "", "Toadstool", 1, "TODO"),
-	("Loek", "Le", "Blansch", 2, "TODO");
+insert into `formula1`.`member` (`firstName`, `middleName`, `lastName`, `functionID`) values
+	("Mario", "", "Mario", 1),
+	("Luigi", "", "Mario", 1),
+	("Peach", "", "Toadstool", 1),
+	("Loek", "Le", "Blansch", 2);
 
 insert into `formula1`.`racedate` (`calanderID`, `raceTypeID`, `week`, `date`) values
 	(2, 2, 4, "2011-01-29"),
@@ -66,22 +66,22 @@ insert into `formula1`.`racedatecircuit` (`raceDateID`, `circuitID`) values
 	(3, 1),
 	(4, 1);
 
-insert into `formula1`.`teamsmember` (`teamsID`, `memberID`, `teamsMembercol`) values
-	(1, 1, "TODO"),
-	(1, 2, "TODO"),
-	(2, 3, "TODO"),
-	(2, 4, "TODO");
+insert into `formula1`.`teamsmember` (`teamsID`, `memberID`) values
+	(1, 1),
+	(1, 2),
+	(2, 3),
+	(2, 4);
 
 insert into `formula1`.`race` (`raceDateID`, `raceNumber`, `fastestLapID`) values
 	(1, 1, 1),
 	(1, 2, 2),
-	(2, 3, 3),
-	(2, 4, 2),
-	(2, 5, 4),
-	(3, 6, 1),
-	(3, 7, 2),
-	(4, 8, 4),
-	(4, 9, 2);
+	(2, 1, 3),
+	(2, 2, 2),
+	(2, 3, 4),
+	(3, 1, 1),
+	(3, 2, 2),
+	(4, 1, 4),
+	(4, 2, 2);
 
 insert into `formula1`.`endpositionrace` (`endPositionID`, `raceID`) values
 	(1, 2),
