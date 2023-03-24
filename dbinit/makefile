@@ -3,7 +3,7 @@ USER = $(shell id -un)
 HOST = localhost
 
 .PHONY: clean permissions init data procedures full
-
+all:full.sql
 # delete old tables and create new tables
 init: base.sql
 	$(SQL) < $<
@@ -23,7 +23,7 @@ full: full.sql
 base.sql: reset.sql init.sql
 	cat $^ > $@
 
-full.sql: reset.sql init.sql data.sql procedures.sql
+full.sql: reset.sql init.sql demo.sql views.sql procedures.sql
 	cat $^ > $@
 
 data.sql:
