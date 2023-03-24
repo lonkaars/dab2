@@ -4,6 +4,8 @@ HOST = localhost
 
 .PHONY: clean permissions init data procedures full
 
+all: full
+
 # delete old tables and create new tables
 init: base.sql
 	$(SQL) < $<
@@ -23,7 +25,7 @@ full: full.sql
 base.sql: reset.sql init.sql
 	cat $^ > $@
 
-full.sql: reset.sql init.sql demo.sql views.sql procedures.sql
+full.sql: reset.sql init.sql demo.sql views.sql functions.sql procedures.sql
 	cat $^ > $@
 
 data.sql:
