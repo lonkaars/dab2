@@ -10,3 +10,14 @@ create procedure spUpdateFlags(imgPath varchar(255))
 			where `B`.`ID` = `A`.`ID`);
 	end$$
 delimiter ;
+
+drop procedure if exists spDeleteFlags;
+
+delimiter $$
+create procedure spDeleteFlags()
+	begin
+		update `nationality`
+		set `nationality`.`flag` = NULL
+		where `nationality`.`flag` is not NULL
+	end$$
+delimiter ;
