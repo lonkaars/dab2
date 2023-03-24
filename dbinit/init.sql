@@ -201,3 +201,5 @@ create table if not exists `formula1`.`teamsmember` (
     foreign key (`teamsID`)
     references `formula1`.`teams` (`ID`));
 
+use `formula1`;	
+
