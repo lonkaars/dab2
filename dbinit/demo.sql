@@ -20,6 +20,7 @@ insert into `formula1`.`nationality` (`country`) values
 	("United states of America"),
 	("Japan"),
 	("North Korea"),
+	("Australië"),
 	("Gelderland zuid");
 
 insert into `formula1`.`racetype` (`raceType`) values

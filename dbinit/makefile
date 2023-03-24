@@ -33,7 +33,8 @@ data.sql:
 
 # grant all database permissions (development only)
 permissions:
-	echo "grant all privileges on formula1.* to '$(USER)'@'$(HOST)';"
+	echo "grant all privileges on formula1.* to '$(USER)'@'$(HOST)';" | sudo $(SQL)
+	echo "grant file on *.* to '$(USER)'@'$(HOST)';" | sudo $(SQL)
 
 # delete generated sql files
 clean:
