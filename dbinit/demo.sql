@@ -36,13 +36,13 @@ insert into `formula1`.`member` (`firstName`, `middleName`, `lastName`, `functio
 	("Peach", "", "Toadstool", 1),
 	("Loek", "Le", "Blansch", 2);
 
-insert into `formula1`.`racedate` (`calanderID`, `raceTypeID`, `week`, `date`) values
+insert into `formula1`.`racedate` (`calendarID`, `raceTypeID`, `week`, `date`) values
 	(2, 2, 4, "2011-01-29"),
 	(1, 2, 12, "2011-04-02"),
 	(3, 1, 28, "2011-07-25"),
 	(5, 1, 29, "2011-07-26");
 
-insert into `formula1`.`teams` (`calanderID`, `teamNumber`, `teamName`) values
+insert into `formula1`.`teams` (`calendarID`, `teamNumber`, `teamName`) values
 	(1, 1, "Team red"),
 	(2, 2, "Team blue");
 
