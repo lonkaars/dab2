@@ -80,15 +80,15 @@ create table if not exists `formula1`.`racetype` (
 
 create table if not exists `formula1`.`racedate` (
   `ID` int not null auto_increment,
-  `calanderID` int null default null,
+  `calendarID` int null default null,
   `raceTypeID` int null default null,
   `week` int not null,
   `date` date not null,
   primary key (`ID`),
-  index `calanderID_idx` (`calanderID` asc) visible,
+  index `calendarID_idx` (`calendarID` asc) visible,
   index `raceTypeID_idx` (`raceTypeID` asc) visible,
-  constraint `calanderID`
-    foreign key (`calanderID`)
+  constraint `calendarID`
+    foreign key (`calendarID`)
     references `formula1`.`calendar` (`ID`)
     on update cascade,
   constraint `raceTypeID`
@@ -175,14 +175,14 @@ create table if not exists `formula1`.`racedatecircuit` (
 
 create table if not exists `formula1`.`teams` (
   `ID` int not null auto_increment,
-  `calanderID` int null default null,
+  `calendarID` int null default null,
   `teamNumber` int null default null,
   `teamName` varchar(45) null default null,
   primary key (`ID`),
   unique index `ID_UNIQUE` (`ID` asc) visible,
-  index `calanderID_idx` (`calanderID` asc) visible,
-  constraint `calanderID2`
-    foreign key (`calanderID`)
+  index `calendarID_idx` (`calendarID` asc) visible,
+  constraint `calendarID2`
+    foreign key (`calendarID`)
     references `formula1`.`calendar` (`ID`)
     on update cascade);
 
