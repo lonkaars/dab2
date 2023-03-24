@@ -3,7 +3,7 @@ USER = $(shell id -un)
 HOST = localhost
 
 .PHONY: clean permissions init data procedures full
-all:full.sql
+
 # delete old tables and create new tables
 init: base.sql
 	$(SQL) < $<
@@ -31,7 +31,7 @@ data.sql:
 
 # grant all database permissions (development only)
 permissions:
-	echo "grant all privileges on formula1.* to '$(USER)'@'$(HOST)';" | sudo $(SQL)
+	echo "grant all privileges on formula1.* to '$(USER)'@'$(HOST)';"
 
 # delete generated sql files
 clean:

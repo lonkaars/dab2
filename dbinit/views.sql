@@ -7,7 +7,7 @@ SELECT
 	`circuit`.`name` AS `name`
 FROM
 	(((`calendar`
-	JOIN `racedate` ON ((`calendar`.`ID` = `racedate`.`calanderID`)))
+	JOIN `racedate` ON ((`calendar`.`ID` = `racedate`.`calendarID`)))
 	JOIN `racedatecircuit` ON ((`racedate`.`ID` = `racedatecircuit`.`raceDateID`)))
 	JOIN `circuit` ON ((`racedatecircuit`.`circuitID` = `circuit`.`ID`)));
 
@@ -22,7 +22,7 @@ SELECT
 	`member`.`middleName` AS `middleName`,
 	`member`.`lastName` AS `lastName`
 FROM
-	(((`calander`
-	JOIN `teams` ON ((`calendar`.`ID` = `teams`.`calanderID`)))
+	(((`calendar`
+	JOIN `teams` ON ((`calendar`.`ID` = `teams`.`calendarID`)))
 	JOIN `teamsmember` ON ((`teams`.`ID` = `teamsmember`.`teamsID`)))
 	JOIN `member` ON ((`teamsmember`.`memberID` = `member`.`ID`)));
