@@ -35,3 +35,4 @@ create procedure spUpdatePersons(imgPath varchar(255))
 			where `B`.`ID` = `A`.`ID`);
 	end$$
 delimiter ;
+

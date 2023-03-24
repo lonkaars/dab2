@@ -201,5 +201,15 @@ create table if not exists `formula1`.`teamsmember` (
     foreign key (`teamsID`)
     references `formula1`.`teams` (`ID`));
 
+create table if not exists `formula1`.`auditlog` (
+  `ID` int not null auto_increment,
+	`timestamp` timestamp not null default current_timestamp(),
+	`user` varchar(45) not null default user(),
+	`action` varchar(10) not null,
+	`fieldName` varchar(45) not null,
+	`newData` varchar(45) null,
+  primary key (`ID`),
+  unique index `ID_UNIQUE` (`ID` asc) visible);
+
 use `formula1`;	
 

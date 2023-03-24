@@ -25,7 +25,7 @@ full: full.sql
 base.sql: reset.sql init.sql
 	cat $^ > $@
 
-full.sql: reset.sql init.sql demo.sql views.sql functions.sql procedures.sql
+full.sql: reset.sql init.sql demo.sql views.sql functions.sql procedures.sql triggers.sql
 	cat $^ > $@
 
 data.sql:
