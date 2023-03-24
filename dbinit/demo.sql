@@ -33,8 +33,8 @@ insert into `formula1`.`specialposition` (`type`) values
 
 insert into `formula1`.`member` (`firstName`, `middleName`, `lastName`, `functionID`) values
 	("Mario", "", "Mario", 1),
-	("Luigi", "", "Mario", 1),
-	("Peach", "", "Toadstool", 1),
+	("Carlos", "Sainz", "jr.", 1),
+	("Max", "", "Verstappen", 1),
 	("Loek", "Le", "Blansch", 2);
 
 insert into `formula1`.`racedate` (`calendarID`, `raceTypeID`, `week`, `date`) values
