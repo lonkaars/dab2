@@ -213,3 +213,5 @@ create table if not exists `formula1`.`auditlog` (
 
 use `formula1`;	
 
+set session transaction isolation level serializable;
+

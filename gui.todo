@@ -1,7 +1,7 @@
 [ ] login dialog box (like mac system settings with padlock) (username + password)
 [ ] drivers
 	- {show} {set} full name
-	- {show} {set} nationality (as flag)
+	- {show} {set} nationality (both as text and as flag)
 	- {show} portrait
 	- {show} {set} team
 	- {show} {set} role/function
@@ -9,18 +9,20 @@
 	- {show} team name
 	- {show} driver names (-> link to driver browser?)
 [ ] calendar
-	- {pick} year
+	- {pick/create} year
+	- {add} race to calendar year
 	- {show} GP name
 	- {show} circuit (-> link)
 	- {show} race (-> link)
 [ ] cirucits
 	- {show} circuit name
 	- {show} circuit length
+	- {show} circuit lap count
 	- {show} location
 	- {show} photo / map
 [ ] races
+	- {create} new race
 	- {show} race number
-	- {show} race lap count
 	- {show} race date
 	- {set} race outcome
 	- {set} points (per driver)
