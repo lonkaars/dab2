@@ -40,6 +40,13 @@ class F1Team():
   calendar_id: int
   number: int
 
+@dataclass
+class F1RaceDate():
+  calendar_id: int
+  race_type_id: int
+  week: int
+  date: datetime.datetime
+
 def get_id_by_key_value(key, value):
   if key not in id_key_map: id_key_map[key] = list()
   if value in id_key_map[key]: return id_key_map[key].index(value) + 1
@@ -115,10 +122,8 @@ def export_specialposition():
 def export_endposition():
   return ""
 
-
 def export_fastestlap():
   return ""
-
 
 def export_racetype():
   out = "insert into `formula1`.`racetype` (`raceType`) values "
@@ -134,16 +139,23 @@ def export_racetype():
   return out
 
 def export_racedate():
-  return ""
-
+  out = "insert into `formula1`.`racedate` (`calendarID`, `raceTypeID`, `week`, `date`) values "
+  found_ids = set()
+  for date in set_racedate:
+    id = get_id_by_key_value("racedate", date)
+    if id in found_ids: continue
+    found_ids.add(id)
+    out += f"({date.calendar_id}, {date.race_type_id}, {date.week}, \"{date.date.strftime('%Y-%m-%d')}\"),"
+  out = list(out)
+  out[-1] = ";" # replace comma
+  out = "".join(out)
+  return out
 
 def export_race():
   return ""
 
-
 def export_endpositionrace():
   return ""
-
 
 def export_nationality():
   out = "insert into `formula1`.`nationality` (`country`) values "
@@ -159,12 +171,16 @@ def export_nationality():
   return out
 
 def export_membernationality():
-  return ""
-
+  out = "insert into `formula1`.`membernationality` (`memberID`, `nationalityID`) values "
+  for member in set_member:
+    out += f"({get_id_by_key_value('member', member.driver_id)}, {get_id_by_key_value('nationality', member.nationality)}),"
+  out = list(out)
+  out[-1] = ";" # replace comma
+  out = "".join(out)
+  return out
 
 def export_racedatecircuit():
   return ""
-
 
 def export_teams():
   out = "insert into `formula1`.`teams` (`calendarID`, `teamNumber`, `teamName`) values "
@@ -179,14 +195,11 @@ def export_teams():
   out = "".join(out)
   return out
 
-
 def export_teamsmember():
   return ""
 
-
 def export_auditlog():
   return ""
-
 
 def export():
   print(("\n").join([
@@ -218,8 +231,13 @@ def main(year):
   set_specialposition.append("disqualified")
   set_specialposition.append("dnf")
   set_function.append("driver")
+  set_calendar.append(year)
+  # make id's accessible in following code
+  export_racetype()
+  export_specialposition()
+  export_function()
+  export_calendar()
   for race in e.season(year).get_races():
-    set_calendar.append(race.season)
     set_race.append(race)
     set_circuit.append(F1Circuit(
       race.circuit.circuit_id,
@@ -237,9 +255,52 @@ def main(year):
         1,
         0
       ))
+
+    if race.first_practice != None:
+      set_racedate.append(F1RaceDate(
+        get_id_by_key_value("calendar", race.season),
+        get_id_by_key_value("racetype", "first_practice"),
+        race.first_practice.isocalendar()[1],
+        race.first_practice
+      ))
+    if race.second_practice != None:
+      set_racedate.append(F1RaceDate(
+        get_id_by_key_value("calendar", race.season),
+        get_id_by_key_value("racetype", "second_practice"),
+        race.second_practice.isocalendar()[1],
+        race.second_practice
+      ))
+    if race.third_practice != None:
+      set_racedate.append(F1RaceDate(
+        get_id_by_key_value("calendar", race.season),
+        get_id_by_key_value("racetype", "third_practice"),
+        race.third_practice.isocalendar()[1],
+        race.third_practice
+      ))
+    if race.sprint != None:
+      set_racedate.append(F1RaceDate(
+        get_id_by_key_value("calendar", race.season),
+        get_id_by_key_value("racetype", "sprint"),
+        race.sprint.isocalendar()[1],
+        race.sprint
+      ))
+    if race.qualifying != None:
+      set_racedate.append(F1RaceDate(
+        get_id_by_key_value("calendar", race.season),
+        get_id_by_key_value("racetype", "qualifying"),
+        race.qualifying.isocalendar()[1],
+        race.qualifying
+      ))
+    if race.date != None:
+      set_racedate.append(F1RaceDate(
+        get_id_by_key_value("calendar", race.season),
+        get_id_by_key_value("racetype", "normal"),
+        race.date.isocalendar()[1],
+        race.date
+      ))
     break
 
-  print(set_teams)
+  print(set_racedate)
 
   export()
 
