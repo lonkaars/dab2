@@ -1,3 +1,4 @@
+use `formula1`;	
 drop function if exists udfTotalDistance;
 
 delimiter $$
@@ -6,10 +7,8 @@ returns int
 begin
 	return (
 		select `circuit`.`length` * `circuit`.`laps`
-		from `circuit`
-		inner join `racedatecircuit` on `racedatecircuit`.`circuitID` = `circuit`.`ID`
-		inner join `racedate` on `racedate`.`ID` = `racedatecircuit`.`raceDateID`
-		inner join `race` on `race`.`raceDateID` = `racedate`.`ID`
+		from `race`
+		inner join `circuit` on `circuit`.`ID` = `race`.`circuitID`
 		where `race`.`ID` = raceID);
 end$$
 

@@ -1,9 +1,9 @@
 drop trigger if exists endposition_ai;
 drop trigger if exists endposition_ad;
 drop trigger if exists endposition_au;
-drop trigger if exists fastestlap_ai;
-drop trigger if exists fastestlap_ad;
-drop trigger if exists fastestlap_au;
+-- drop trigger if exists fastestlap_ai;
+-- drop trigger if exists fastestlap_ad;
+-- drop trigger if exists fastestlap_au;
 
 delimiter $$
 create trigger endposition_ai after insert on endposition
@@ -51,29 +51,29 @@ end; $$
 delimiter ;
 
 
-delimiter $$
-create trigger fastestlap_ai after insert on fastestlap
-for each row begin
-	insert into `formula1`.`auditlog` (`action`, `fieldName`, `newData`)
-		select 'insert', 'fastestlap.memberID', cast(new.`memberID` as char)
-		from `fastestlap` as d where d.`ID` = new.`ID`;
-end; $$
-delimiter ;
-
-delimiter $$
-create trigger fastestlap_ad before delete on fastestlap
-for each row begin
-	insert into `formula1`.`auditlog` (`action`, `fieldName`, `newData`)
-		select 'delete', 'fastestlap.memberID', NULL
-		from `fastestlap` as d where d.`ID` = old.`ID`;
-end; $$
-delimiter ;
-
-delimiter $$
-create trigger fastestlap_au after update on fastestlap
-for each row begin
-	insert into `formula1`.`auditlog` (`action`, `fieldName`, `newData`)
-		select 'update', 'fastestlap.memberID', cast(new.`memberID` as char)
-		from `fastestlap` as d where d.`ID` = new.`ID` and old.`memberID` != new.`memberID`;
-end; $$
-delimiter ;
+-- delimiter $$
+-- create trigger fastestlap_ai after insert on fastestlap
+-- for each row begin
+-- 	insert into `formula1`.`auditlog` (`action`, `fieldName`, `newData`)
+-- 		select 'insert', 'fastestlap.memberID', cast(new.`memberID` as char)
+-- 		from `fastestlap` as d where d.`ID` = new.`ID`;
+-- end; $$
+-- delimiter ;
+-- 
+-- delimiter $$
+-- create trigger fastestlap_ad before delete on fastestlap
+-- for each row begin
+-- 	insert into `formula1`.`auditlog` (`action`, `fieldName`, `newData`)
+-- 		select 'delete', 'fastestlap.memberID', NULL
+-- 		from `fastestlap` as d where d.`ID` = old.`ID`;
+-- end; $$
+-- delimiter ;
+-- 
+-- delimiter $$
+-- create trigger fastestlap_au after update on fastestlap
+-- for each row begin
+-- 	insert into `formula1`.`auditlog` (`action`, `fieldName`, `newData`)
+-- 		select 'update', 'fastestlap.memberID', cast(new.`memberID` as char)
+-- 		from `fastestlap` as d where d.`ID` = new.`ID` and old.`memberID` != new.`memberID`;
+-- end; $$
+-- delimiter ;

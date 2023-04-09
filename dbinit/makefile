@@ -22,7 +22,7 @@ base.sql: reset.sql init.sql
 	cat $^ > $@
 
 data.sql:
-	./import.py > $@
+	./import.py 2018 > $@
 
 full.sql: base.sql data.sql views.sql functions.sql procedures.sql triggers.sql update.sql
 	cat $^ > $@

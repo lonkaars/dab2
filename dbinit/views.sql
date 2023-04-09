@@ -1,3 +1,5 @@
+use `formula1`;
+
 create view `formula1`.`vwcalendar` as
 select
 	`calendar`.`year` as `year`,
@@ -5,10 +7,10 @@ select
 	`racedate`.`date` as `date`,
 	`circuit`.`name` as `name`
 from
-	`calendar`
-	join `racedate` on `calendar`.`ID` = `racedate`.`calendarID`
-	join `racedatecircuit` on `racedate`.`ID` = `racedatecircuit`.`raceDateID`
-	join `circuit` on `racedatecircuit`.`circuitID` = `circuit`.`ID`;
+	`racedate`
+	join `calendar` on `calendar`.`ID` = `racedate`.`calendarID`
+	join `race` on `race`.`raceDateID` = `racedate`.`ID`
+	join `circuit` on `race`.`circuitID` = `circuit`.`ID`;
 
 create view `formula1`.`vwteamcoureurs` as
 select
