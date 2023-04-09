@@ -15,15 +15,19 @@ set_function = list()
 set_member = list()
 set_specialposition = list()
 set_endposition = list()
-set_fastestlap = list()
 set_racetype = list()
 set_racedate = list()
 set_race = list()
-set_endpositionrace = list()
 set_nationality = list()
 set_membernationality = list()
-set_racedatecircuit = list()
 set_teams = list()
+set_raceresult = list()
+
+def race2id(race):
+  return f"{race.date.timestamp()}-{race.circuit.circuit_id}"
+
+def result2id(result):
+  return f"{result.driver.driver_id}-{result.number}-{result.status}"
 
 def eprint(*args, **kwargs):
   print(*args, file=sys.stderr, **kwargs)
@@ -66,6 +70,12 @@ class F1EndPosition():
   _member_id: str
   position: int
   _status_id: int
+
+@dataclass
+class F1RaceResult():
+  _end_position_id: str
+  _race_id: str
+  fastest_lap: int
 
 def get_id_by_key_value(key, value):
   if key not in id_key_map: id_key_map[key] = list()
@@ -178,10 +188,30 @@ def export_racedate():
   return out
 
 def export_race():
-  return ""
+  out = "insert into `formula1`.`race` (`raceDateID`, `circuitID`) values "
+  found_ids = set()
+  for race in set_race:
+    id = get_id_by_key_value("racedate", race.date)
+    if id in found_ids: continue
+    found_ids.add(id)
+    id = get_id_by_key_value("race", race2id(race))
+    out += f"({id}, {get_id_by_key_value('circuit', race.circuit.circuit_id)}),"
+  out = list(out)
+  out[-1] = ";" # replace comma
+  out = "".join(out)
+  return out
 
 def export_raceresult():
-  return ""
+  out = "insert into `formula1`.`raceresult` (`endPositionID`, `raceID`, `fastestlap`) values "
+  found_ids = set()
+  for result in set_raceresult:
+    end_position_id = get_id_by_key_value('endposition', result._end_position_id)
+    race_id = get_id_by_key_value("race", result._race_id)
+    out += f"({end_position_id}, {race_id}, {result.fastest_lap}),"
+  out = list(out)
+  out[-1] = ";" # replace comma
+  out = "".join(out)
+  return out
 
 def export_nationality():
   out = "insert into `formula1`.`nationality` (`country`) values "
@@ -204,19 +234,6 @@ def export_membernationality():
     if id in found_ids: continue
     found_ids.add(id)
     out += f"({id}, {get_id_by_key_value('nationality', member.nationality)}),"
-  out = list(out)
-  out[-1] = ";" # replace comma
-  out = "".join(out)
-  return out
-
-def export_racedatecircuit():
-  out = "insert into `formula1`.`racedatecircuit` (`raceDateID`, `circuitID`) values "
-  found_ids = set()
-  for date in set_racedate:
-    id = get_id_by_key_value("racedate", date.date)
-    if id in found_ids: continue
-    found_ids.add(id)
-    out += f"({id}, {get_id_by_key_value('circuit', date._circuit_id)}),"
   out = list(out)
   out[-1] = ";" # replace comma
   out = "".join(out)
@@ -261,7 +278,6 @@ def export():
     export_teams(),
     export_membernationality(),
     export_endposition(),
-    export_racedatecircuit(),
     export_teamsmember(),
     export_race(),
     export_raceresult()
@@ -275,12 +291,6 @@ def crawl(year):
   set_racetype.append("qualifying")
   set_racetype.append("normal")
   set_function.append("driver")
-  # make id's accessible in following code
-  export_racetype()
-  export_specialposition()
-  export_function()
-  export_calendar()
-  i = 0
   for race in e.season(year).get_races():
     set_calendar.append(race.season)
     set_circuit.append(F1Circuit(
@@ -294,8 +304,9 @@ def crawl(year):
     for result in race.results:
       for status in e.season(race.season).round(race.round_no).get_statuses():
         set_specialposition.append(status)
+      end_position_id = result2id(result)
       set_endposition.append(F1EndPosition(
-        f"{result.driver.driver_id}-{result.number}-{result.status}",
+        end_position_id,
         result.driver.driver_id,
         result.position,
         result.status
@@ -315,6 +326,11 @@ def crawl(year):
         result.driver.nationality,
         "driver",
         result.constructor.constructor_id
+      ))
+      set_raceresult.append(F1RaceResult(
+        end_position_id,
+        race2id(race),
+        result.fastest_lap.lap
       ))
 
     if race.first_practice != None:
@@ -365,15 +381,13 @@ def crawl(year):
         race.date,
         race.circuit.circuit_id
       ))
-    i += 1
-    if i == 3: break
 
 if __name__ == "__main__":
   if len(sys.argv) < 2: # no year provided
     eprint("please provide a year to fetch f1 data from")
     exit(1)
-  else if len(sys.argv) == 2: # crawl single year
-    crawl(year)
+  elif len(sys.argv) == 2: # crawl single year
+    crawl(sys.argv[1])
   else: # crawl range
     for year in range(*[int(x) for x in sys.argv[1:4]]):
       crawl(year)
