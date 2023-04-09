@@ -44,8 +44,8 @@ class F1Team():
 
 @dataclass
 class F1RaceDate():
-  calendar_id: int
-  race_type_id: int
+  _calendar_id: int
+  _race_type_id: str
   week: int
   date: datetime.datetime
   _circuit_id: str
@@ -57,8 +57,15 @@ class F1Member():
   middle_name: str
   last_name: str
   nationality: str
-  function_id: int
+  _function: str
   _team_id: str
+
+@dataclass
+class F1EndPosition():
+  _id: str
+  _member_id: str
+  position: int
+  _status_id: int
 
 def get_id_by_key_value(key, value):
   if key not in id_key_map: id_key_map[key] = list()
@@ -112,7 +119,7 @@ def export_member():
     id = get_id_by_key_value("member", member.id)
     if id in found_ids: continue
     found_ids.add(id)
-    out += f"(\"{member.first_name}\", \"{member.middle_name}\", \"{member.last_name}\", {member.function_id}),"
+    out += f"(\"{member.first_name}\", \"{member.middle_name}\", \"{member.last_name}\", {get_id_by_key_value('function', member._function)}),"
   out = list(out)
   out[-1] = ";" # replace comma
   out = "".join(out)
@@ -121,18 +128,28 @@ def export_member():
 def export_specialposition():
   out = "insert into `formula1`.`specialposition` (`type`) values "
   found_ids = set()
-  for type in set_specialposition:
-    id = get_id_by_key_value("specialposition", type)
+  for status in set_specialposition:
+    id = get_id_by_key_value("specialposition", status.status_id)
     if id in found_ids: continue
     found_ids.add(id)
-    out += f"('{type}'),"
+    out += f"('{status.status}'),"
   out = list(out)
   out[-1] = ";" # replace comma
   out = "".join(out)
   return out
 
 def export_endposition():
-  return ""
+  out = "insert into `formula1`.`endposition` (`memberID`, `position`, `specialPositionID`) values "
+  found_ids = set()
+  for pos in set_endposition:
+    id = get_id_by_key_value("endposition", pos._id)
+    if id in found_ids: continue
+    found_ids.add(id)
+    out += f"({get_id_by_key_value('driver', pos._member_id)}, {pos.position}, {get_id_by_key_value('specialposition', pos._status_id)}),"
+  out = list(out)
+  out[-1] = ";" # replace comma
+  out = "".join(out)
+  return out
 
 def export_fastestlap():
   return ""
@@ -157,7 +174,7 @@ def export_racedate():
     id = get_id_by_key_value("racedate", date.date)
     if id in found_ids: continue
     found_ids.add(id)
-    out += f"({date.calendar_id}, {date.race_type_id}, {date.week}, \"{date.date.strftime('%Y-%m-%d')}\"),"
+    out += f"({get_id_by_key_value('calendar', date._calendar_id)}, {get_id_by_key_value('racetype', date._race_type_id)}, {date.week}, \"{date.date.strftime('%Y-%m-%d')}\"),"
   out = list(out)
   out[-1] = ";" # replace comma
   out = "".join(out)
@@ -261,10 +278,7 @@ def main(year):
   set_racetype.append("sprint")
   set_racetype.append("qualifying")
   set_racetype.append("normal")
-  set_specialposition.append("disqualified")
-  set_specialposition.append("dnf")
   set_function.append("driver")
-  set_calendar.append(year)
   # make id's accessible in following code
   export_racetype()
   export_specialposition()
@@ -272,6 +286,7 @@ def main(year):
   export_calendar()
   i = 0
   for race in e.season(year).get_races():
+    set_calendar.append(race.season)
     set_race.append(race)
     set_circuit.append(F1Circuit(
       race.circuit.circuit_id,
@@ -279,8 +294,16 @@ def main(year):
       0,
       len(race.laps)
     ))
-    race = e.season(year).round(race.round_no).get_result()
+    race = e.season(race.season).round(race.round_no).get_result()
     for result in race.results:
+      for status in e.season(race.season).round(race.round_no).get_statuses():
+        set_specialposition.append(status)
+      set_endposition.append(F1EndPosition(
+        f"{result.driver.driver_id}-{result.number}-{result.status}",
+        result.driver.driver_id,
+        result.position,
+        result.status
+      ))
       set_nationality.append(result.driver.nationality)
       set_teams.append(F1Team(
         result.constructor.constructor_id,
@@ -294,54 +317,54 @@ def main(year):
         "",
         result.driver.family_name,
         result.driver.nationality,
-        get_id_by_key_value("function", "driver"),
+        "driver",
         result.constructor.constructor_id
       ))
 
     if race.first_practice != None:
       set_racedate.append(F1RaceDate(
-        get_id_by_key_value("calendar", year),
-        get_id_by_key_value("racetype", "first_practice"),
+        race.season,
+        "first_practice",
         race.first_practice.isocalendar()[1],
         race.first_practice,
         race.circuit.circuit_id
       ))
     if race.second_practice != None:
       set_racedate.append(F1RaceDate(
-        get_id_by_key_value("calendar", year),
-        get_id_by_key_value("racetype", "second_practice"),
+        race.season,
+        "second_practice",
         race.second_practice.isocalendar()[1],
         race.second_practice,
         race.circuit.circuit_id
       ))
     if race.third_practice != None:
       set_racedate.append(F1RaceDate(
-        get_id_by_key_value("calendar", year),
-        get_id_by_key_value("racetype", "third_practice"),
+        race.season,
+        "third_practice",
         race.third_practice.isocalendar()[1],
         race.third_practice,
         race.circuit.circuit_id
       ))
     if race.sprint != None:
       set_racedate.append(F1RaceDate(
-        get_id_by_key_value("calendar", year),
-        get_id_by_key_value("racetype", "sprint"),
+        race.season,
+        "sprint",
         race.sprint.isocalendar()[1],
         race.sprint,
         race.circuit.circuit_id
       ))
     if race.qualifying != None:
       set_racedate.append(F1RaceDate(
-        get_id_by_key_value("calendar", year),
-        get_id_by_key_value("racetype", "qualifying"),
+        race.season,
+        "qualifying",
         race.qualifying.isocalendar()[1],
         race.qualifying,
         race.circuit.circuit_id
       ))
     if race.date != None:
       set_racedate.append(F1RaceDate(
-        get_id_by_key_value("calendar", year),
-        get_id_by_key_value("racetype", "normal"),
+        race.season,
+        "normal",
         race.date.isocalendar()[1],
         race.date,
         race.circuit.circuit_id
