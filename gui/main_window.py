@@ -1,6 +1,6 @@
 import mariadb
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 
 from tab_drivers import *
 from tab_teams import *
@@ -32,12 +32,15 @@ class MainWindow(QMainWindow):
   def call_delete_flags(self):
     self.cursor.execute("call spDeleteFlags()")
 
-  def __init__(self, parent=None):
+  def __init__(self, cursor: mariadb.Cursor, parent=None):
     super(MainWindow, self).__init__(parent)
+
+    self.set_cursor(cursor)
+
     self.setWindowTitle("[floating] dab2 eindopdracht main window")
     self.setMinimumHeight(500)
 
-    self._tab_drivers = TabDrivers(self)
+    self._tab_drivers = TabDrivers(self.cursor, self)
     self._tab_teams = TabTeams(self)
     self._tab_calendar = TabCalendar(self)
     self._tab_circuits = TabCircuits(self)

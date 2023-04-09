@@ -1,19 +1,14 @@
 import os
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt
 
 class SplitViewLayout(QGridLayout):
-  def _setWidget(self, column: int, w: QWidget):
-    self.addWidget(w, 0, column, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-
-    return
-
   def leftWidget(self, w: QWidget):
-    self._setWidget(0, w)
+    self.addWidget(w, 0, 0)
 
   def rightWidget(self, w: QWidget):
-    self._setWidget(1, w)
+    self.addWidget(w, 0, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
   def __init__(self, parent=None):
     super(SplitViewLayout, self).__init__(parent)
