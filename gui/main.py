@@ -7,14 +7,7 @@ from PyQt6.QtWidgets import *
 from PyQt6 import *
 
 from login_dialog import *
-
-global db
-global cursor
-
-class MainWindow(QMainWindow):
-  def __init__(self, parent=None):
-    super(MainWindow, self).__init__(parent)
-    self.setWindowTitle("[floating] dab2 eindopdracht main window")
+from main_window import *
 
 if __name__ == '__main__':
   app = QApplication(sys.argv)
@@ -28,6 +21,7 @@ if __name__ == '__main__':
       break
     except:
       print("Login failed, please try again")
-  cursor = db.cursor(buffered=True)
+  win.set_cursor(db.cursor(buffered=True))
   win.show()
   app.exec()
+

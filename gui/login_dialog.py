@@ -7,10 +7,10 @@ class LoginDialog(QDialog):
   username = os.getlogin()
   database = "formula1"
   password = ""
-  field_database = None
-  field_hostname = None
-  field_username = None
-  field_password = None
+  field_database: QLineEdit
+  field_hostname: QLineEdit
+  field_username: QLineEdit
+  field_password: QLineEdit
 
   def submit(self):
     self.database = self.field_database.text()
@@ -43,3 +43,4 @@ class LoginDialog(QDialog):
     layout.addRow(self.login_button)
 
     self.setLayout(layout)
+
