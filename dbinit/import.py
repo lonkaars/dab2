@@ -24,7 +24,6 @@ set_nationality = list()
 set_membernationality = list()
 set_racedatecircuit = list()
 set_teams = list()
-set_teamsmember = list()
 
 def eprint(*args, **kwargs):
   print(*args, file=sys.stderr, **kwargs)
@@ -50,6 +49,16 @@ class F1RaceDate():
   week: int
   date: datetime.datetime
   _circuit_id: str
+
+@dataclass
+class F1Member():
+  id: str
+  first_name: str
+  middle_name: str
+  last_name: str
+  nationality: str
+  function_id: int
+  _team_id: str
 
 def get_id_by_key_value(key, value):
   if key not in id_key_map: id_key_map[key] = list()
@@ -97,14 +106,13 @@ def export_function():
   return out
 
 def export_member():
-  out = "insert into `formula1`.`member` (`firstName`, `lastName`, `functionID`) values "
+  out = "insert into `formula1`.`member` (`firstName`, `middleName`, `lastName`, `functionID`) values "
   found_ids = set()
-  function_id = get_id_by_key_value("function", "driver")
   for member in set_member:
-    id = get_id_by_key_value("member", member.driver_id)
+    id = get_id_by_key_value("member", member.id)
     if id in found_ids: continue
     found_ids.add(id)
-    out += f"(\"{member.given_name}\", \"{member.family_name}\", {function_id}),"
+    out += f"(\"{member.first_name}\", \"{member.middle_name}\", \"{member.last_name}\", {member.function_id}),"
   out = list(out)
   out[-1] = ";" # replace comma
   out = "".join(out)
@@ -178,7 +186,7 @@ def export_membernationality():
   out = "insert into `formula1`.`membernationality` (`memberID`, `nationalityID`) values "
   found_ids = set()
   for member in set_member:
-    id = get_id_by_key_value("member", member.driver_id)
+    id = get_id_by_key_value("member", member.id)
     if id in found_ids: continue
     found_ids.add(id)
     out += f"({id}, {get_id_by_key_value('nationality', member.nationality)}),"
@@ -214,7 +222,17 @@ def export_teams():
   return out
 
 def export_teamsmember():
-  return ""
+  out = "insert into `formula1`.`teamsmember` (`teamsID`, `memberID`) values "
+  found_ids = set()
+  for member in set_member:
+    id = get_id_by_key_value("member", member.id)
+    if id in found_ids: continue
+    found_ids.add(id)
+    out += f"({get_id_by_key_value('teams', member._team_id)}, {id}),"
+  out = list(out)
+  out[-1] = ";" # replace comma
+  out = "".join(out)
+  return out
 
 def export():
   print(("\n").join([
@@ -230,8 +248,8 @@ def export():
     export_fastestlap(),
     export_membernationality(),
     export_endposition(),
-    export_teamsmember(),
     export_racedatecircuit(),
+    export_teamsmember(),
     export_race(),
     export_endpositionrace()
   ]))
@@ -261,15 +279,23 @@ def main(year):
       0,
       len(race.laps)
     ))
-    for driver in e.season(race.season).round(race.round_no).get_drivers():
-      set_nationality.append(driver.nationality)
-      set_member.append(driver)
-    for team in e.season(race.season).round(race.round_no).get_constructors():
+    race = e.season(year).round(race.round_no).get_result()
+    for result in race.results:
+      set_nationality.append(result.driver.nationality)
       set_teams.append(F1Team(
-        team.constructor_id,
-        team.name,
+        result.constructor.constructor_id,
+        result.constructor.name,
         1,
         0
+      ))
+      set_member.append(F1Member(
+        result.driver.driver_id,
+        result.driver.given_name,
+        "",
+        result.driver.family_name,
+        result.driver.nationality,
+        get_id_by_key_value("function", "driver"),
+        result.constructor.constructor_id
       ))
 
     if race.first_practice != None:
