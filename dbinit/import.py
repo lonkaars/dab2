@@ -151,9 +151,6 @@ def export_endposition():
   out = "".join(out)
   return out
 
-def export_fastestlap():
-  return ""
-
 def export_racetype():
   out = "insert into `formula1`.`racetype` (`raceType`) values "
   found_ids = set()
@@ -183,7 +180,7 @@ def export_racedate():
 def export_race():
   return ""
 
-def export_endpositionrace():
+def export_raceresult():
   return ""
 
 def export_nationality():
@@ -262,16 +259,15 @@ def export():
     export_member(),
     export_racedate(),
     export_teams(),
-    export_fastestlap(),
     export_membernationality(),
     export_endposition(),
     export_racedatecircuit(),
     export_teamsmember(),
     export_race(),
-    export_endpositionrace()
+    export_raceresult()
   ]))
 
-def main(year):
+def crawl(year):
   set_racetype.append("first_practice")
   set_racetype.append("second_practice")
   set_racetype.append("third_practice")
@@ -287,7 +283,6 @@ def main(year):
   i = 0
   for race in e.season(year).get_races():
     set_calendar.append(race.season)
-    set_race.append(race)
     set_circuit.append(F1Circuit(
       race.circuit.circuit_id,
       race.circuit.circuit_name,
@@ -295,6 +290,7 @@ def main(year):
       len(race.laps)
     ))
     race = e.season(race.season).round(race.round_no).get_result()
+    set_race.append(race)
     for result in race.results:
       for status in e.season(race.season).round(race.round_no).get_statuses():
         set_specialposition.append(status)
@@ -372,11 +368,14 @@ def main(year):
     i += 1
     if i == 3: break
 
-  export()
-
 if __name__ == "__main__":
-  if len(sys.argv) < 2:
+  if len(sys.argv) < 2: # no year provided
     eprint("please provide a year to fetch f1 data from")
     exit(1)
-  main(sys.argv[1])
+  else if len(sys.argv) == 2: # crawl single year
+    crawl(year)
+  else: # crawl range
+    for year in range(*[int(x) for x in sys.argv[1:4]]):
+      crawl(year)
+  export()
 

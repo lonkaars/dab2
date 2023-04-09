@@ -61,17 +61,6 @@ create table if not exists `formula1`.`endposition` (
     references `formula1`.`specialposition` (`ID`)
     on update cascade);
 
-create table if not exists `formula1`.`fastestlap` (
-  `ID` int not null auto_increment,
-  `memberID` int null default null,
-  primary key (`ID`),
-  unique index `ID_UNIQUE` (`ID` asc) visible,
-  index `memberIDfastestlap_idx` (`memberID` asc) visible,
-  constraint `memberIDfastestlap`
-    foreign key (`memberID`)
-    references `formula1`.`member` (`ID`)
-    on update cascade);
-
 create table if not exists `formula1`.`racetype` (
   `ID` int not null auto_increment,
   `raceType` varchar(45) not null,
@@ -99,26 +88,25 @@ create table if not exists `formula1`.`racedate` (
 create table if not exists `formula1`.`race` (
   `ID` int not null auto_increment,
   `raceDateID` int null default null,
-  `raceNumber` int null default null,
-  `fastestLapID` int null default null,
+  `circuitID` int null default null,
   primary key (`ID`),
   unique index `ID_UNIQUE` (`ID` asc) visible,
-  index `raceNumber_idx` (`raceNumber` asc) visible,
+  index `circuitID_idx` (`circuitID` asc) visible,
   index `raceDateID_idx` (`raceDateID` asc) visible,
-  index `fastestLapID_idx` (`fastestLapID` asc) visible,
-  constraint `fastestLapID`
-    foreign key (`fastestLapID`)
-    references `formula1`.`fastestlap` (`ID`)
+  constraint `circuitID`
+    foreign key (`circuitID`)
+    references `formula1`.`circuit` (`ID`)
     on update cascade,
-  constraint `raceDateIDRace`
+  constraint `raceDateID`
     foreign key (`raceDateID`)
     references `formula1`.`racedate` (`ID`)
     on update cascade);
 
-create table if not exists `formula1`.`endpositionrace` (
+create table if not exists `formula1`.`raceresult` (
   `ID` int not null auto_increment,
   `endPositionID` int null default null,
   `raceID` int null default null,
+  `fastestlap` int null default null,
   primary key (`ID`),
   unique index `ID_UNIQUE` (`ID` asc) visible,
   index `endPositionID_idx` (`endPositionID` asc) visible,
@@ -154,23 +142,6 @@ create table if not exists `formula1`.`membernationality` (
   constraint `nationalityID`
     foreign key (`nationalityID`)
     references `formula1`.`nationality` (`ID`)
-    on update cascade);
-
-create table if not exists `formula1`.`racedatecircuit` (
-  `ID` int not null auto_increment,
-  `raceDateID` int null default null,
-  `circuitID` int null default null,
-  primary key (`ID`),
-  unique index `ID_UNIQUE` (`ID` asc) visible,
-  index `circuitID_idx` (`circuitID` asc) visible,
-  index `raceDateID_idx` (`raceDateID` asc) visible,
-  constraint `circuitID`
-    foreign key (`circuitID`)
-    references `formula1`.`circuit` (`ID`)
-    on update cascade,
-  constraint `raceDateID`
-    foreign key (`raceDateID`)
-    references `formula1`.`racedate` (`ID`)
     on update cascade);
 
 create table if not exists `formula1`.`teams` (

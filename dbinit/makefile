@@ -2,34 +2,30 @@ SQL = mysql
 USER = $(shell id -un)
 HOST = localhost
 
-.PHONY: clean permissions init data procedures full
+.PHONY: clean permissions base data full
 
 all: full
 
 # delete old tables and create new tables
-init: base.sql
+base: base.sql
 	$(SQL) < $<
 
 # fill tables with data
 data: data.sql
 	$(SQL) < $<
 
-# add procedures/sql functions
-procedures: procedures.sql
-	$(SQL) < $<
-
-# do all of the above in one go
+# do everything
 full: full.sql
 	$(SQL) < $<
 
 base.sql: reset.sql init.sql
 	cat $^ > $@
 
-full.sql: reset.sql init.sql demo.sql views.sql functions.sql procedures.sql triggers.sql
-	cat $^ > $@
-
 data.sql:
 	./import.py > $@
+
+full.sql: base.sql data.sql views.sql functions.sql procedures.sql triggers.sql update.sql
+	cat $^ > $@
 
 # grant all database permissions (development only)
 permissions:
