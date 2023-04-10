@@ -4,7 +4,7 @@ import os
 import sys
 import ergast_py
 from dataclasses import dataclass
-import datetime
+from datetime import datetime, date
 
 e = ergast_py.Ergast()
 id_key_map = dict()
@@ -29,6 +29,9 @@ def race2id(race):
 def result2id(result):
   return f"{result.driver.driver_id}-{result.number}-{result.status}"
 
+def team2id(team):
+  return f"{team.calendar_id}-{team.id}"
+
 def eprint(*args, **kwargs):
   print(*args, file=sys.stderr, **kwargs)
 
@@ -51,7 +54,7 @@ class F1RaceDate():
   _calendar_id: int
   _race_type_id: str
   week: int
-  date: datetime.datetime
+  date: datetime
   _circuit_id: str
 
 @dataclass
@@ -243,10 +246,10 @@ def export_teams():
   out = "insert into `formula1`.`teams` (`calendarID`, `teamNumber`, `teamName`) values "
   found_ids = set()
   for team in set_teams:
-    id = get_id_by_key_value("teams", team.id)
+    id = get_id_by_key_value("teams", team2id(team))
     if id in found_ids: continue
     found_ids.add(id)
-    out += f"({team.calendar_id}, {team.number}, \"{team.name}\"),"
+    out += f"({get_id_by_key_value('calendar', team.calendar_id)}, {team.number}, \"{team.name}\"),"
   out = list(out)
   out[-1] = ";" # replace comma
   out = "".join(out)
@@ -312,12 +315,13 @@ def crawl(year):
         result.status
       ))
       set_nationality.append(result.driver.nationality)
-      set_teams.append(F1Team(
+      team = F1Team(
         result.constructor.constructor_id,
         result.constructor.name,
-        1,
+        race.season,
         0
-      ))
+      )
+      set_teams.append(team)
       set_member.append(F1Member(
         result.driver.driver_id,
         result.driver.given_name,
@@ -325,13 +329,14 @@ def crawl(year):
         result.driver.family_name,
         result.driver.nationality,
         "driver",
-        result.constructor.constructor_id
+        team2id(team),
       ))
-      set_raceresult.append(F1RaceResult(
-        end_position_id,
-        race2id(race),
-        result.fastest_lap.lap
-      ))
+      if result.fastest_lap.time != None:
+        set_raceresult.append(F1RaceResult(
+          end_position_id,
+          race2id(race),
+          int((datetime.combine(date.min, result.fastest_lap.time) - datetime.min).total_seconds()),
+        ))
 
     if race.first_practice != None:
       set_racedate.append(F1RaceDate(
