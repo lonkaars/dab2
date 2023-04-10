@@ -1,13 +1,13 @@
 [x] login dialog box (like mac system settings with padlock) (username + password)
 [ ] drivers
 	- [x] {show} {set} full name
-	- [ ] {show} {set} nationality (both as text and as flag)
+	- [x] {show} {set} nationality (both as text and as flag)
 	- [x] {show} portrait
-	- [ ] {show} {set} team
-	- [ ] {show} {set} role/function
+	- [x] {show} {set} role/function
 [ ] teams
 	- [ ] {show} team name
 	- [ ] {show} driver names (-> link to driver browser?)
+	- [ ] {add/remove} driver
 [ ] calendar
 	- [ ] {pick/create} year
 	- [ ] {add} race to calendar year
