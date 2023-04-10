@@ -313,7 +313,7 @@ class ResultDetailsWidget(QWidget):
     self.setLayout(layout)
 
 class TabRaces(QWidget):
-  calendar_id: int = 0
+  calendar_id: int = 1
   parent: QMainWindow
   cursor: mariadb.Cursor
   selected_race_id: int = 1

@@ -54,6 +54,10 @@ class TeamsModel(QAbstractTableModel):
         team.name,
       )[index.column()]
 
+  def set_calendar_id(self, calendar_id):
+    self.calendar_id = calendar_id
+    self.update()
+
 class TeamBrowser(QTableView):
   model_table: TeamsModel
   model_proxy: QSortFilterProxyModel
@@ -74,6 +78,9 @@ class TeamBrowser(QTableView):
 
   def set_parent_update(self, fn):
     self.parent_update_fn = fn
+
+  def set_calendar_id(self, calendar_id):
+    self.model_table.set_calendar_id(calendar_id)
 
   def on_selection(self):
     if self.ignore_update: return
@@ -178,6 +185,7 @@ class TabTeams(QWidget):
   layout: SplitViewLayout
   cursor: mariadb.Cursor
   selected_team_id: int = 1
+  calendar_id: int = 1
 
   team_browser: TeamBrowser
   team_details: TeamDetailsWidget
@@ -192,6 +200,10 @@ class TabTeams(QWidget):
     self.selected_team_id = self.team_browser.selected_team_id
     self.team_browser.update(False)
     self.team_details.set_team_id(self.selected_team_id)
+
+  def set_calendar_id(self, calendar_id):
+    self.calendar_id = calendar_id
+    self.team_browser.set_calendar_id(calendar_id)
 
   def __init__(self, cursor, parent=None):
     super(TabTeams, self).__init__(parent)

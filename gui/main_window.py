@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
   cursor: mariadb.Cursor = None
   db: mariadb.Connection = None
   menu_bar: QMenuBar
-  calendar_id: int
+  calendar_id: int = 1
 
   _tab_drivers: TabDrivers
   _tab_teams: TabTeams
@@ -80,6 +80,7 @@ class MainWindow(QMainWindow):
 
   def switch_season(self):
     self.calendar_id = self.sender().property("id")
+    self._tab_teams.set_calendar_id(self.calendar_id)
     self._tab_races.set_calendar_id(self.calendar_id)
 
   def __init__(self, cursor: mariadb.Cursor, db: mariadb.Connection, parent=None):
