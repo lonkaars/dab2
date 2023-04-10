@@ -11,6 +11,7 @@ class MainWindow(QMainWindow):
   cursor: mariadb.Cursor = None
   db: mariadb.Connection = None
   menu_bar: QMenuBar
+  calendar_id: int
 
   _tab_drivers: TabDrivers
   _tab_teams: TabTeams
@@ -46,6 +47,17 @@ class MainWindow(QMainWindow):
 
   def call_delete_flags(self):
     self.cursor.execute("call spDeleteFlags()")
+
+  def update(self, cascade=True):
+    if cascade == False: return
+    self._tab_drivers.update()
+    self._tab_teams.update()
+    # self._tab_circuits.update()
+    # self._tab_races.update()
+
+  def switch_season(self):
+    self.calendar_id = self.sender().property("id")
+    self.update()
 
   def __init__(self, cursor: mariadb.Cursor, db: mariadb.Connection, parent=None):
     super(MainWindow, self).__init__(parent)
@@ -85,8 +97,19 @@ class MainWindow(QMainWindow):
     action.triggered.connect(self.commit)
 
     menu = self.menu_bar.addMenu("seasons")
+    group = QActionGroup(menu)
+    group.setExclusive(True)
+    self.cursor.execute("select ID, year from calendar")
+    for i, season in enumerate(self.cursor.fetchall()):
+      action = menu.addAction(str(season[1]))
+      action.setProperty("id", season[0])
+      action.triggered.connect(self.switch_season)
+      action.setCheckable(True)
+      if i == 0:
+        action.setChecked(True)
+        self.calendar_id = season[0]
+      group.addAction(action)
 
     self.setMenuBar(self.menu_bar)
     self.setCentralWidget(main_layout)
-
 
