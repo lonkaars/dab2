@@ -103,6 +103,7 @@ class DriverBrowser(QTableView):
     self.setModel(self.model_proxy)
     self.setSortingEnabled(True)
     self.selectionModel().selectionChanged.connect(self.on_selection)
+    self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
 @dataclass
 class DBNationality():
@@ -118,13 +119,12 @@ class NationalityEditorWidget(QWidget):
   button_add: QPushButton
   nationalities: [DBNationality]
 
-  def remove_nationality(self, nationality_id):
-    print(f"removing nationality id {nationality_id} from driver {self.selected_driver_id}")
+  def remove_nationality(self):
+    nationality_id = self.sender().property("id")
     self.cursor.execute("delete from `formula1`.`membernationality` where `memberID` = ? and `nationalityID` = ?", (self.selected_driver_id,nationality_id,))
     self.update(False)
 
   def add_nationality(self, nationality_id):
-    print(f"adding nationality id {nationality_id} from driver {self.selected_driver_id}")
     self.cursor.execute("insert into `formula1`.`membernationality` (`memberID`, `nationalityID`) values (?, ?)", (self.selected_driver_id,nationality_id,))
     self.update(False)
 
@@ -137,7 +137,6 @@ class NationalityEditorWidget(QWidget):
     nationalities = list()
     self.cursor.execute("select `nationality`.`ID`, `nationality`.`country`, `nationality`.`flag` from nationality join membernationality on membernationality.nationalityID = nationality.ID where membernationality.memberID = ?", (self.selected_driver_id,))
     last_row = 0
-    buttons = list()
     for i, record in enumerate(self.cursor.fetchall()):
       nationality = DBNationality(*record)
       if nationality.icon != None:
@@ -147,16 +146,17 @@ class NationalityEditorWidget(QWidget):
         flag_label.setPixmap(pixmap)
         self.layout.addWidget(flag_label, i, 0)
       self.layout.addWidget(QLabel(nationality.name), i, 1)
-      buttons.insert(i, QPushButton("remove"))
-      temp = nationality.id
-      buttons[i].clicked.connect(lambda: self.remove_nationality(temp)) # idk this works
-      self.layout.addWidget(buttons[i], i, 2)
+      button = QPushButton("remove")
+      button.setProperty("id", nationality.id)
+      button.clicked.connect(self.remove_nationality) # idk this works
+      self.layout.addWidget(button, i, 2)
       nationalities.append(nationality)
       last_row = i
     new_nationality_picker = QComboBox()
     for nationality in all_nationalities:
       new_nationality_picker.addItem(nationality[1], nationality[0])
     new_nationality_picker.setCurrentIndex(-1)
+    new_nationality_picker.setPlaceholderText("Add nationality...")
     new_nationality_picker.currentIndexChanged.connect(lambda i: self.add_nationality(new_nationality_picker.itemData(i)))
     self.layout.addWidget(new_nationality_picker, last_row + 1, 0, 1, 3)
 
