@@ -15,13 +15,13 @@
 	- [x] {show} circuit lap count
 	- [x] {show} photo / map
 [ ] races
-	- [ ] {create} new race
-	- [ ] {show} race number
-	- [ ] {show} race date
-	- [ ] {set} race outcome
-	- [ ] {set} points (per driver)
-	- [ ] {set} driver that got the fastest round
-	- [ ] {set/order} drivers by finish number
-	- [ ] {set/radio} driver disqualified/DNF
+	- [x] {show} race number
+	- [x] {show} race date
+	- [x] {set} race outcome (end position)
+	- [x] {set} driver fastest lap time
+	- [ ] {show/calculate} points (per driver)
+	- [x] {set/order} drivers by finish number
+	- [x] {set} driver disqualified/DNF
 	- [ ] {add} race to calendar year
+	- [ ] {create} new race (calendar year)
 

@@ -76,11 +76,11 @@ class MainWindow(QMainWindow):
     self._tab_drivers.update()
     self._tab_teams.update()
     self._tab_circuits.update()
-    # self._tab_races.update()
+    self._tab_races.update()
 
   def switch_season(self):
     self.calendar_id = self.sender().property("id")
-    self.update()
+    self._tab_races.set_calendar_id(self.calendar_id)
 
   def __init__(self, cursor: mariadb.Cursor, db: mariadb.Connection, parent=None):
     super(MainWindow, self).__init__(parent)
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
     self._tab_drivers = TabDrivers(self.cursor, self)
     self._tab_teams = TabTeams(self.cursor, self)
     self._tab_circuits = TabCircuits(self.cursor, self)
-    self._tab_races = TabRaces(self)
+    self._tab_races = TabRaces(self.cursor, self)
 
     self.main_layout = QTabWidget(self);
     self.main_layout.addTab(self._tab_drivers, "Drivers")
