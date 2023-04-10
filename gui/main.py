@@ -20,7 +20,7 @@ if __name__ == '__main__':
       break
     except:
       print("Login failed, please try again")
-  win = MainWindow(db.cursor(buffered=True))
+  win = MainWindow(db.cursor(buffered=True), db)
   win.show()
   app.exec()
 

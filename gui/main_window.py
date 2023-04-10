@@ -10,6 +10,7 @@ from tab_races import *
 
 class MainWindow(QMainWindow):
   cursor: mariadb.Cursor = None
+  db: mariadb.Connection = None
   menu_bar: QMenuBar
 
   _tab_drivers: TabDrivers
@@ -18,8 +19,24 @@ class MainWindow(QMainWindow):
   _tab_circuits: TabCircuits
   _tab_races: TabRaces
 
-  def set_cursor(self, cursor):
+  def set_cursor(self, cursor: mariadb.Cursor):
     self.cursor = cursor
+
+  def set_connection(self, db: mariadb.Connection):
+    self.db = db
+
+  def commit(self):
+    self.db.commit()
+
+  def exit(self, commit=False):
+    if commit: self.commit()
+    self.db.close()
+    self.close()
+
+  def exit_no_commit(self):
+    self.exit(False)
+  def exit_commit(self):
+    self.exit(True)
 
   def call_update_flags(self):
     folder = QFileDialog().getExistingDirectory(self, "Open directory", "/var/dab2/")
@@ -32,10 +49,11 @@ class MainWindow(QMainWindow):
   def call_delete_flags(self):
     self.cursor.execute("call spDeleteFlags()")
 
-  def __init__(self, cursor: mariadb.Cursor, parent=None):
+  def __init__(self, cursor: mariadb.Cursor, db: mariadb.Connection, parent=None):
     super(MainWindow, self).__init__(parent)
 
     self.set_cursor(cursor)
+    self.set_connection(db)
 
     self.setWindowTitle("[floating] dab2 eindopdracht main window")
     self.setMinimumHeight(500)
@@ -54,6 +72,11 @@ class MainWindow(QMainWindow):
     main_layout.addTab(self._tab_races, "races")
     
     self.menu_bar = QMenuBar(self)
+    menu_procedures = self.menu_bar.addMenu("file")
+    sp_update_flags = menu_procedures.addAction("Exit (commit changes)")
+    sp_update_flags.triggered.connect(self.exit_commit)
+    sp_update_flags = menu_procedures.addAction("Exit (don't commit changes)")
+    sp_update_flags.triggered.connect(self.exit_no_commit)
     menu_procedures = self.menu_bar.addMenu("procedures")
     sp_update_flags = menu_procedures.addAction("Import/update flags")
     sp_update_flags.triggered.connect(self.call_update_flags)
@@ -61,6 +84,9 @@ class MainWindow(QMainWindow):
     sp_update_persons.triggered.connect(self.call_update_persons)
     sp_delete_flags = menu_procedures.addAction("Delete flags")
     sp_delete_flags.triggered.connect(self.call_delete_flags)
+    menu_procedures = self.menu_bar.addMenu("database")
+    sp_update_flags = menu_procedures.addAction("Commit changes")
+    sp_update_flags.triggered.connect(self.commit)
 
     self.setMenuBar(self.menu_bar)
     self.setCentralWidget(main_layout)
