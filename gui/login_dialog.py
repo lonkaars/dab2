@@ -33,7 +33,7 @@ class LoginDialog(QDialog):
     self.field_password = QLineEdit(self.password)
     self.field_password.setPlaceholderText("password")
     self.field_password.setEchoMode(QLineEdit.EchoMode.Password)
-    self.login_button = QPushButton("login")
+    self.login_button = QPushButton("Login")
     self.login_button.clicked.connect(self.submit)
     layout = QFormLayout()
     layout.addRow(QLabel("Database:"), self.field_database)

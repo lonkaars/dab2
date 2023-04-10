@@ -27,7 +27,7 @@ drop procedure if exists spUpdatePersons;
 delimiter $$
 create procedure spUpdatePersons(imgPath varchar(255))
 	begin
-		select concat(imgPath, regexp_replace(concat(`firstName`, " ", `middleName`, " ", `lastName`), '  *', ' '), ".jpg") from `member`;
+		-- select concat(imgPath, regexp_replace(concat(`firstName`, " ", `middleName`, " ", `lastName`), '  *', ' '), ".jpg") from `member`;
 		update `member` as `A`
 		set `A`.`photo` = (
 			select load_file(concat(imgPath, regexp_replace(concat(`firstName`, " ", `middleName`, " ", `lastName`), '  *', ' '), ".jpg")) as `photo`
@@ -36,3 +36,16 @@ create procedure spUpdatePersons(imgPath varchar(255))
 	end$$
 delimiter ;
 
+drop procedure if exists spUpdateCircuits;
+
+delimiter $$
+create procedure spUpdateCircuits(imgPath varchar(255))
+	begin
+    -- select concat(imgPath, regexp_replace(`name`, " ", "_"), ".png") from circuit;
+		update `circuit` as `A`
+		set `A`.`photo` = (
+      select load_file(concat(imgPath, regexp_replace(`name`, " ", "_"), ".png")) as `photo`
+      from `circuit` as `B`
+			where `B`.`ID` = `A`.`ID`);
+	end$$
+delimiter ;

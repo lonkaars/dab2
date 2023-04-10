@@ -296,6 +296,9 @@ class TabDrivers(QWidget):
     self.driver_browser.update(False)
     self.driver_details.set_driver_id(self.selected_driver_id)
 
+  def set_driver_id(self, id):
+    print("not implemented")
+
   def __init__(self, cursor: mariadb.Cursor, parent=None):
     super(TabDrivers, self).__init__(parent)
     self.cursor = cursor

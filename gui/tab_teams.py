@@ -102,12 +102,12 @@ class TeamBrowser(QTableView):
     self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
 class TeamDetailsWidget(QWidget):
+  parent: QWidget
   cursor: mariadb.Cursor
   parent_update_fn: callable
   selected_team_id: int = 1
 
   team_members: QFormLayout
-  buttons: [QPushButton]
   layout: QVBoxLayout
   new_member_picker: QComboBox
 
@@ -121,7 +121,6 @@ class TeamDetailsWidget(QWidget):
     self.update(False)
 
   def update(self, cascade=True):
-    self.buttons = list()
     for x in range(self.team_members.rowCount()):
       self.team_members.removeRow(0)
     self.cursor.execute("select member.ID, firstName, middleName, lastName from member join teamsmember on teamsmember.memberID = member.ID where teamsmember.teamsID = ?", (self.selected_team_id,))
@@ -154,6 +153,7 @@ class TeamDetailsWidget(QWidget):
 
   def __init__(self, cursor: mariadb.Cursor, parent=None):
     super(TeamDetailsWidget, self).__init__(parent)
+    self.parent = parent
     self.cursor = cursor
 
     self.layout = QVBoxLayout(self)
@@ -174,6 +174,7 @@ class TeamDetailsWidget(QWidget):
     self.setLayout(self.layout)
 
 class TabTeams(QWidget):
+  parent: QMainWindow
   layout: SplitViewLayout
   cursor: mariadb.Cursor
   selected_team_id: int = 1
@@ -194,6 +195,7 @@ class TabTeams(QWidget):
 
   def __init__(self, cursor, parent=None):
     super(TabTeams, self).__init__(parent)
+    self.parent = parent
     self.layout = SplitViewLayout(self)
     self.cursor = cursor
 

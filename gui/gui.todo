@@ -1,4 +1,4 @@
-[ ] {pick} year
+[x] {pick} year
 [x] login dialog box (like mac system settings with padlock) (username + password)
 [x] drivers
 	- [x] {show} {set} full name
@@ -9,12 +9,11 @@
 	- [x] {show} team name
 	- [x] {show} driver names (-> link to driver browser?)
 	- [x] {add/remove} driver
-[ ] cirucits
-	- [ ] {show} circuit name
-	- [ ] {show} circuit length
-	- [ ] {show} circuit lap count
-	- [ ] {show} location
-	- [ ] {show} photo / map
+[x] cirucits
+	- [x] {show} circuit name
+	- [x] {show} circuit length
+	- [x] {show} circuit lap count
+	- [x] {show} photo / map
 [ ] races
 	- [ ] {create} new race
 	- [ ] {show} race number
