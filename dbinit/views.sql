@@ -25,3 +25,21 @@ from
 	join `teams` on `calendar`.`ID` = `teams`.`calendarID`
 	join `teamsmember` on `teams`.`ID` = `teamsmember`.`teamsID`
 	join `member` on `teamsmember`.`memberID` = `member`.`ID`;
+
+create view `formula1`.`vwFastestLapRaceID` as
+select raceresult.raceID, min(raceresult.fastestlap) as fastestlap
+  from raceresult join
+  endposition on endposition.ID = raceresult.endPositionID
+  group by raceresult.raceID;
+
+create view `formula1`.`vwFastestlapMemberID` as
+select
+  vwFastestLapRaceID.raceID,
+  vwFastestLapRaceID.fastestlap,
+  endposition.memberID
+from vwFastestLapRaceID
+join raceresult on raceresult.raceID = vwFastestLapRaceID.raceID and raceresult.fastestlap = vwFastestLapRaceID.fastestlap
+join endposition on endposition.ID = raceresult.endPositionID
+group by raceresult.raceID;
+
+

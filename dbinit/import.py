@@ -302,6 +302,12 @@ def crawl(year):
       0,
       len(race.laps)
     ))
+    if race.first_practice != None and race.first_practice.timestamp() >= datetime.now().timestamp(): return
+    if race.second_practice != None and race.second_practice.timestamp() >= datetime.now().timestamp(): return
+    if race.third_practice != None and race.third_practice.timestamp() >= datetime.now().timestamp(): return
+    if race.sprint != None and race.sprint.timestamp() >= datetime.now().timestamp(): return
+    if race.qualifying != None and race.qualifying.timestamp() >= datetime.now().timestamp(): return
+    if race.date != None and race.date.timestamp() >= datetime.now().timestamp(): return
     race = e.season(race.season).round(race.round_no).get_result()
     set_race.append(race)
     for result in race.results:
